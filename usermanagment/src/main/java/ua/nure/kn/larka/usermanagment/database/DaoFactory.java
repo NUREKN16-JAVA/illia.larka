@@ -4,14 +4,24 @@ import java.io.IOException;
 import java.util.Properties;
 import java.io.InputStream;
 
-public class DaoFactory {
-	private static final String USER_DAO = "dao.kn.larka.usermanagement.db.UserDao";
-	private Properties properties;
-	private final static DaoFactory INSTANCE = new DaoFactory();
-	    
-    public static DaoFactory getInstance() {
-        return INSTANCE;
-    }
+public abstract class DaoFactory {
+	private static Properties properties;
+
+	private static final String DAO_FACTORY ="dao.kn.larka.usermanagement.db.UserDao";;
+	private static DaoFactory instance;
+	   
+	public static synchronized DaoFactory getInstance() {
+		if (instance == null){
+	    		try {
+				Class factoryClass = Class.forName(properties
+						.getProperty(DAO_FACTORY));
+				instance = (DaoFactory) factoryClass.newInstance();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+	   	}
+	       return instance;
+	}
     
 	public DaoFactory() {
 		properties = new Properties();
@@ -38,15 +48,5 @@ public class DaoFactory {
 		return new ConnectionFactoryImplementation(properties);
 	}
 	
-	public UserDao getUserDao() {
-		UserDao result = null;
-		try {
-			Class clazz = Class.forName(properties.getProperty(USER_DAO));
-			result = (UserDao) clazz.newInstance();
-			result.setConnectionFactory(getConnectionFactory());
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return result;
-	}
+	public abstract UserDao getUserDao();
 }
