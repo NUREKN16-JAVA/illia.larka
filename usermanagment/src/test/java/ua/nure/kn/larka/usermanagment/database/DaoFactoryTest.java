@@ -8,7 +8,6 @@ import junit.framework.TestCase;
 public class DaoFactoryTest extends TestCase{
 	public void testGetUserDao() {
 		try {
-			// First
 			DaoFactory daoFactory = DaoFactory.getInstance();
 			assertNotNull("DaoFactoryinstance is null", daoFactory);
 			
