@@ -75,7 +75,7 @@ public class HsqldbUserDao implements UserDao {
 	
 	}
 	
-	public void update(User user) throws DatabaseCustomException {
+	public User update(User user) throws DatabaseCustomException {
 	       try {
 	            Connection connection = connectionFactory.createConnection();
 	            PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY);
@@ -92,6 +92,8 @@ public class HsqldbUserDao implements UserDao {
 	            statement.close();
 	            connection.close();
 	            
+	            return user;
+	            
 	        } catch (DatabaseCustomException e) {
 	            throw e;
 	        } catch (SQLException e) {
@@ -99,7 +101,7 @@ public class HsqldbUserDao implements UserDao {
 	        }
 	}
 	
-	public void delete(User user) throws DatabaseCustomException {
+	public User delete(User user) throws DatabaseCustomException {
 		try {
             Connection connection = connectionFactory.createConnection();
             PreparedStatement statement = connection.prepareStatement(DELETE_QUERY);
@@ -112,6 +114,8 @@ public class HsqldbUserDao implements UserDao {
             }
             statement.close();
             connection.close();
+            
+            return user;
         } catch (DatabaseCustomException e) {
             throw e;
         } catch (SQLException e) {
@@ -147,29 +151,30 @@ public class HsqldbUserDao implements UserDao {
 	}
 	
 	public Collection findAll() throws DatabaseCustomException {
-    Collection result = new  LinkedList();
-     try {
-    Connection connection = connectionFactory.createConnection();
-   
-		Statement statement = connection.createStatement();
-		ResultSet resultSet = statement.executeQuery(SELECT_ALL_QUERY);
-		while(resultSet.next()){
-			User user = new User();
-			user.setId(new Long(resultSet.getLong(1)));
-			user.setFirstName(resultSet.getString(2));
-			user.setLastName(resultSet.getString(3));
-			user.setDateOfBirthd(resultSet.getDate(4));
-			result.add(user);
+	    Collection result = new  LinkedList();
+	    try {
+	    Connection connection = connectionFactory.createConnection();
+	   
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(SELECT_ALL_QUERY);
+			while(resultSet.next()){
+				User user = new User();
+				user.setId(new Long(resultSet.getLong(1)));
+				user.setFirstName(resultSet.getString(2));
+				user.setLastName(resultSet.getString(3));
+				user.setDateOfBirthd(resultSet.getDate(4));
+				result.add(user);
+			}
+			resultSet.close();
+	        statement.close();
+	        connection.close();
 		}
-		resultSet.close();
-        statement.close();
-        connection.close();
-	}catch(DatabaseCustomException e){
-		throw e;
-	}
-     catch (SQLException e) {
-	throw new DatabaseCustomException(e);
-	}
+	     catch(DatabaseCustomException e){
+			throw e;
+		}
+	    catch (SQLException e) {
+	    	 throw new DatabaseCustomException(e);
+		}
 		return result;
 	}
 		 
