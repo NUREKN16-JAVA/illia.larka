@@ -1,52 +1,53 @@
 package main.java.ua.nure.kn.larka.usermanagment.database;
-
+//	protected static final String DAO_FACTORY ="dao.kn.larka.usermanagement.db.UserDao";;
 import java.io.IOException;
 import java.util.Properties;
-import java.io.InputStream;
 
 public abstract class DaoFactory {
-	private static Properties properties;
 
-	private static final String DAO_FACTORY ="dao.kn.larka.usermanagement.db.UserDao";;
-	private static DaoFactory instance;
-	   
-	public static synchronized DaoFactory getInstance() {
-		if (instance == null){
-	    		try {
-				Class factoryClass = Class.forName(properties
-						.getProperty(DAO_FACTORY));
-				instance = (DaoFactory) factoryClass.newInstance();
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-	   	}
-	       return instance;
-	}
-    
-	public DaoFactory() {
+	protected static final String USER_DAO = "dao.kn.larka.usermanagement.db.UserDao";
+	protected static final String DAO_FACTORY = "dao.factory";
+	protected static Properties properties;
+	
+	private  static DaoFactory instance; 
+	
+	static{
 		properties = new Properties();
 		try {
-			String propFileName = "settings.properties";
- 
-			InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
- 
-			if (inputStream != null) {
-				properties.load(inputStream);
-			}
-			
-			//properties.load(getClass().getClassLoader().getResourceAsStream("resources/settings.properties"));
+			properties.load(DaoFactory.class.getClassLoader().getResourceAsStream("settings.properties"));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+			// e.printStackTrace();
 		}
 	}
+	    
+    public static synchronized DaoFactory getInstance() {
+    	if(instance == null){
+    		Class factoryClass;
+			try {
+				factoryClass = Class.forName(properties.getProperty(DAO_FACTORY));
+				instance = (DaoFactory) factoryClass.newInstance();
+			} catch (Exception e) {
+			throw new RuntimeException(e);
+			}
+    	
+    	}
+        return instance ;
+    }
+
+    protected DaoFactory() {
 	
-	public void init (Properties properties){
-		this.properties = properties;
+    }
+
+	public static void init (Properties prop){
+		properties = prop;
+		instance = null;
 	}
 	
-	private ConnectionFactory getConnectionFactory() {
+	protected ConnectionFactory getConnectionFactory() {
+	
 		return new ConnectionFactoryImplementation(properties);
 	}
-	
+
 	public abstract UserDao getUserDao();
 }
