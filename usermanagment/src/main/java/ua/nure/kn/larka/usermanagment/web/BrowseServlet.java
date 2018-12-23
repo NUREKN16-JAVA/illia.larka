@@ -15,9 +15,6 @@ public class BrowseServlet extends HttpServlet {
 
     protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-    	// check if any button was clicked, and if it was then 
-	    // execute the appropriate operation
-    	
         if (req.getParameter("addButton") != null) {
             add(req, resp);
         } else if (req.getParameter("editButton") != null) {
@@ -31,16 +28,47 @@ public class BrowseServlet extends HttpServlet {
         }
     }
 
-    private void details(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO Auto-generated method stub
+	private void details(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String idStr = req.getParameter("id");
+        if (idStr == null || idStr.trim().length() == 0) {
+            req.setAttribute("error","You must select a user");
+            req.getRequestDispatcher("/browse.jsp").forward(req,  resp);
+            return;
+        }
+        try {
+            User user = DaoFactory.getInstance().getUserDao().find(new Long(idStr));
+            req.getSession().setAttribute("user", user);
+        } catch (Exception e) {
+            req.setAttribute("error","ERROR:" + e.toString());
+            req.getRequestDispatcher("/browse.jsp").forward(req, resp);
+            return;
+        }
+        req.getRequestDispatcher("/details").forward(req, resp);
         
     }
 
     private void delete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO Auto-generated method stub
-        
+        String idStr = req.getParameter("id");
+        if (idStr == null || idStr.trim().length() == 0) {
+            req.setAttribute("error","You must select a user");
+            req.getRequestDispatcher("/browse.jsp").forward(req,  resp);
+            return;
+        }
+        try {
+            User user = DaoFactory.getInstance().getUserDao().find(new Long(idStr));
+            DaoFactory.getInstance().getUserDao().delete(user);
+            req.getSession().setAttribute("result", "ok");
+        }
+        catch (Exception e) {
+            req.setAttribute("error","ERROR:" + e.toString());            
+        }
+        browse(req,resp);
     }
 
+    /**
+     * @param req
+     * @param resp
+     */
     private void edit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String idStr = req.getParameter("id");
         if (idStr == null || idStr.trim().length() == 0) {
@@ -77,4 +105,4 @@ public class BrowseServlet extends HttpServlet {
         }
         
     }
-} 
+}

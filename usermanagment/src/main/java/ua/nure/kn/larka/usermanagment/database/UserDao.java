@@ -2,6 +2,7 @@ package main.java.ua.nure.kn.larka.usermanagment.database;
 
 import java.util.Collection;
 import main.java.ua.nure.kn.larka.usermanagment.*;
+import main.java.ua.nure.kn.larka.usermanagment.agent.User;
 
 public interface UserDao {
 	User create(User user) throws DatabaseCustomException;
@@ -11,6 +12,8 @@ public interface UserDao {
 	User delete(User user) throws DatabaseCustomException;
 	
 	User find(Long id) throws DatabaseCustomException;
+	
+	Collection find(String firstName, String lastName) throws DatabaseCustomException;
 	
 	Collection findAll() throws DatabaseCustomException;
 	

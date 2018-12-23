@@ -7,7 +7,7 @@ import com.mockrunner.servlet.BasicServletTestCaseAdapter;
 import main.java.ua.nure.kn.larka.usermanagment.database.DaoFactory;
 import test.java.ua.nure.kn.larka.usermanagment.database.MockDaoFactory;
 
-// на этом месте у меня было много проблем очень много
+// эххххххххххххххх
 public abstract class MockServletTestCase extends BasicServletTestCaseAdapter {
 	private Mock mockUserDao;
 	   
